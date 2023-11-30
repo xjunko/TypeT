@@ -1,3 +1,5 @@
+#include "../../math/time.cpp"
+#include "../../math/transform.cpp"
 #include "../texture/texture_manager.cpp"
 #include <array>
 #include <string>
@@ -9,18 +11,49 @@ class Sprite {
 public:
   Math::Vector2<float> position;
   Math::Vector2<float> size;
+  Time::Time<float> time;
 
+  std::vector<std::shared_ptr<Transform::Transform>> transforms;
   std::vector<std::shared_ptr<Texture>> textures;
   int texture_frame;
 
   // FNs
   void draw();
+  void update(float);
+  void apply_transform(std::shared_ptr<Transform::Transform>, float);
 };
 
+// Internal
+void Sprite::apply_transform(
+    std::shared_ptr<Transform::Transform> current_transform,
+    float current_time) {
+
+  switch (current_transform->type) {
+  case Transform::Type::MOVE: {
+    auto [x, y] = current_transform->as_two(current_time);
+    position.x = x;
+    position.y = y;
+    break;
+  }
+  }
+}
+
+// Update
+void Sprite::update(float time) {
+  // O(n) tier shit but thisll works for now
+  for (int i = 0; i < transforms.size(); i++) {
+    std::printf("%f %f", transforms[i]->time.start, transforms[i]->time.end);
+    if (time >= transforms[i]->time.start && time <= transforms[i]->time.end) {
+      apply_transform(transforms[i], time);
+    }
+  }
+}
+
+// Draw
 void Sprite::draw() {
-  //   if (!textures[texture_frame]) {
-  //     return; // Welp, shit i guess.
-  //   }
+  if (!textures[texture_frame]) {
+    return; // Welp, shit i guess.
+  }
 
   textures[texture_frame]->draw(position, size);
 }
