@@ -1,5 +1,6 @@
 #include "easing.cpp"
 #include "time.cpp"
+#include <memory>
 #include <vector>
 
 namespace Transform {
@@ -42,6 +43,20 @@ std::tuple<float, float> Transform::as_two(float transform_time) {
                                 after[0] - before[0], time.duration()),
                          easing(transform_time - time.start, before[1],
                                 after[1] - before[1], time.duration()));
+}
+
+// Helper function
+std::shared_ptr<Transform> create(Type type, Easing::EasingFunction easing,
+                                  Time::Time<float> time,
+                                  std::vector<float> before,
+                                  std::vector<float> after) {
+  std::shared_ptr<Transform> transform = std::make_shared<Transform>();
+  transform->type = type;
+  transform->time = time;
+  transform->before = before;
+  transform->after = after;
+
+  return transform;
 }
 
 } // namespace Transform
