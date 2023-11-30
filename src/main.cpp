@@ -21,7 +21,9 @@ class Context {
 public:
   std::unique_ptr<AssetManager> assets;
   std::unique_ptr<Sprite> sprite;
-  std::unique_ptr<Audio::BASS> audio;
+
+  std::shared_ptr<Audio::BASS> audio_mixer;
+  std::shared_ptr<Audio::Track> audio_song;
 
   int time;
   std::shared_ptr<Transform::Transform> transform;
@@ -61,8 +63,12 @@ void initialize(void *user_data) {
   sgl_setup(&sgl_desc);
 
   // Audio pipeline
-  data->audio = std::make_unique<Audio::BASS>();
-  data->audio->initialize();
+  data->audio_mixer = std::make_shared<Audio::BASS>();
+  data->audio_mixer->initialize();
+
+  data->audio_song = Audio::new_track("assets/Sakura No Zenya/[Nightcore].mp3",
+                                      data->audio_mixer);
+  data->audio_song->play();
 
   // Init(s) fields
   data->assets = std::make_unique<AssetManager>();
