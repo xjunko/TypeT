@@ -72,18 +72,9 @@ void initialize(void *user_data) {
   std::printf("Valid: %b \n", data->sprite->textures[0]->valid);
 
   // Transform TEST
-  data->transform = std::make_shared<Transform::Transform>();
-
-  data->transform->type = Transform::Type::MOVE;
-
-  data->transform->before.push_back(0.0f);
-  data->transform->before.push_back(0.0f);
-
-  data->transform->after.push_back(320.0f);
-  data->transform->after.push_back(240.0f);
-
-  data->transform->time.start = 100.0f;
-  data->transform->time.end = 200.0f;
+  data->transform =
+      Transform::create(Transform::Type::MOVE, Easing::linear, {100.0f, 200.0f},
+                        {0.0f, 0.0f}, {320.0f, 240.0f});
 
   data->sprite->transforms.push_back(data->transform);
 }
