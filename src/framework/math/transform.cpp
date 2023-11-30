@@ -1,4 +1,5 @@
 #include "easing.cpp"
+#include "time.cpp"
 #include <vector>
 
 namespace Transform {
@@ -22,20 +23,25 @@ class Transform {
 public:
   Type type;
   Easing::EasingFunction easing = Easing::linear;
-
-  float start;
-  float end;
-  float duration;
-
+  Time::Time<float> time;
   std::vector<float> before;
   std::vector<float> after;
 
   // FNs
   float as_one(float);
+  std::tuple<float, float> as_two(float);
 };
 
-float Transform::as_one(float time) {
-  return easing(time - start, before[0], after[0] - before[0], duration);
+float Transform::as_one(float transform_time) {
+  return easing(transform_time - time.start, before[0], after[0] - before[0],
+                time.duration());
+}
+
+std::tuple<float, float> Transform::as_two(float transform_time) {
+  return std::make_tuple(easing(transform_time - time.start, before[0],
+                                after[0] - before[0], time.duration()),
+                         easing(transform_time - time.start, before[1],
+                                after[1] - before[1], time.duration()));
 }
 
 } // namespace Transform
