@@ -10,6 +10,8 @@
 // Internal
 #include "framework/audio/audio.cpp"
 #include "framework/graphics/sprite/sprite.cpp"
+#include "framework/math/time.cpp"
+#include "framework/storyboard/storyboard.cpp"
 
 namespace TypeT {
 
@@ -25,8 +27,10 @@ public:
   std::shared_ptr<Audio::BASS> audio_mixer;
   std::shared_ptr<Audio::Track> audio_song;
 
-  int time;
+  std::unique_ptr<Time::Limiter> limiter;
   std::shared_ptr<Transform::Transform> transform;
+
+  float time;
 
   // FNs
   void begin();
@@ -71,6 +75,9 @@ void initialize(void *user_data) {
   data->audio_song->play();
 
   // Init(s) fields
+  data->limiter = std::make_unique<Time::Limiter>();
+  data->limiter->fps = 24;
+
   data->assets = std::make_unique<AssetManager>();
 
   data->sprite = SpriteUtils::create_sprite_from_image_path(
@@ -79,33 +86,35 @@ void initialize(void *user_data) {
 
   // Transform TEST
   data->transform =
-      Transform::create(Transform::Type::MOVE, Easing::linear, {100.0f, 200.0f},
-                        {0.0f, 0.0f}, {320.0f, 240.0f});
+      Transform::create(Transform::Type::MOVE, Easing::linear,
+                        {100.0f, 5000.0f}, {0.0f, 0.0f}, {320.0f, 240.0f});
 
   data->sprite->transforms.push_back(data->transform);
 }
 
 void draw(void *user_data) {
   Context *ctx = static_cast<Context *>(user_data);
+  ctx->time = ctx->audio_song->get_position();
 
-  std::printf("%i \n", ctx->time);
+  std::printf("\r %f \n", ctx->time);
 
   {
     ctx->time++;
 
-    if (ctx->time >= 500) {
+    if (ctx->time >= 5000) {
       ctx->sprite.reset();
     };
   }
 
   ctx->begin();
 
-  if (ctx->time < 500) {
+  if (ctx->time < 5000) {
     ctx->sprite->update(float(ctx->time));
     ctx->sprite->draw();
   }
 
   ctx->end();
+  ctx->limiter->sync();
 }
 
 void cleanup(void *user_data) {

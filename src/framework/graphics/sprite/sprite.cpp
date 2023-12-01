@@ -1,3 +1,4 @@
+#pragma once
 #include "../../math/time.cpp"
 #include "../../math/transform.cpp"
 #include "../texture/texture_manager.cpp"
@@ -42,7 +43,6 @@ void Sprite::apply_transform(
 void Sprite::update(float time) {
   // O(n) tier shit but thisll works for now
   for (int i = 0; i < transforms.size(); i++) {
-    std::printf("%f %f", transforms[i]->time.start, transforms[i]->time.end);
     if (time >= transforms[i]->time.start && time <= transforms[i]->time.end) {
       apply_transform(transforms[i], time);
     }
