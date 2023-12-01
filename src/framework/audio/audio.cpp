@@ -67,6 +67,7 @@ public:
   void play();
   void pause();
   void resume();
+  float get_position();
 };
 
 void Track::initialize() {
@@ -98,6 +99,12 @@ void Track::pause() {
 
 void Track::resume() {
   BASS_Mixer_ChannelFlags(channel, 0, BASS_MIXER_CHAN_PAUSE);
+}
+
+float Track::get_position() {
+  return BASS_ChannelBytes2Seconds(
+             channel, BASS_Mixer_ChannelGetPosition(channel, BASS_POS_BYTE)) *
+         1000.0f;
 }
 
 std::shared_ptr<Track> new_track(std::string path, std::shared_ptr<BASS> bass) {
