@@ -35,7 +35,17 @@ public:
 
   // Debug
   Texture() { std::printf("[Texture] Created, %s \n", info.path.c_str()); }
-  ~Texture() { std::printf("[Texture] Destroyed, %s \n", info.path.c_str()); }
+  ~Texture() {
+    if (data) {
+      stbi_image_free(data);
+
+      if (image.id != 0 && sg_isvalid()) {
+        sg_destroy_image(image);
+      }
+
+      std::printf("[Texture] Destroyed, %s \n", info.path.c_str());
+    }
+  }
 };
 
 void Texture::initialize_sokol_image() {
