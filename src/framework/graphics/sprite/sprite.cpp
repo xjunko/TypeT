@@ -17,6 +17,7 @@ public:
   std::vector<std::shared_ptr<Transform::Transform>> transforms;
   std::vector<std::shared_ptr<Texture>> textures;
   int texture_frame;
+  float alpha;
 
   // FNs
   void draw();
@@ -36,6 +37,12 @@ void Sprite::apply_transform(
     position.y = y;
     break;
   }
+
+  case Transform::Type::FADE: {
+    std::printf("ALHPAAA!!");
+    alpha = current_transform->as_one(current_time);
+    break;
+  }
   }
 }
 
@@ -44,6 +51,7 @@ void Sprite::update(float time) {
   // O(n) tier shit but thisll works for now
   for (int i = 0; i < transforms.size(); i++) {
     if (time >= transforms[i]->time.start && time <= transforms[i]->time.end) {
+      std::cout << "aplying" << std::endl;
       apply_transform(transforms[i], time);
     }
   }
@@ -55,7 +63,7 @@ void Sprite::draw() {
     return; // Welp, shit i guess.
   }
 
-  textures[texture_frame]->draw(position, size);
+  textures[texture_frame]->draw(position, size, alpha);
 }
 
 // Helper FNs

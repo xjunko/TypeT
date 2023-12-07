@@ -17,7 +17,8 @@ enum Type {
   ADDITIVE,
   FLIP_VERT,
   FLIP_HORIZ,
-  SCALE_VECTOR
+  SCALE_VECTOR,
+  _INVALID
 };
 
 class Transform {

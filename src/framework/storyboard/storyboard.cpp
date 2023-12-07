@@ -13,11 +13,16 @@
 class Storyboard {
 public:
   std::string root;
-  std::vector<Sprite> sprites;
+  std::vector<std::shared_ptr<Sprite>> sprites;
+  AssetManager assets;
 
   // FNs
   void parse_file(std::string path);
   void parse_lines(std::vector<std::string> lines);
+
+  void load_sprite(std::string header, std::vector<std::string> commands);
+
+  void draw(float time);
 };
 
 void Storyboard::parse_file(std::string path) {
@@ -90,6 +95,7 @@ void Storyboard::parse_lines(std::vector<std::string> lines) {
           (line_copy.rfind("Animation", 0) == 0)) {
         if (current_sprite.size() != 0) {
           std::printf("[Storyboard] Load, %zu commands! \n", commands.size());
+          load_sprite(current_sprite, commands);
         }
 
         current_sprite = line_copy;
@@ -97,6 +103,83 @@ void Storyboard::parse_lines(std::vector<std::string> lines) {
       } else if ((line.rfind(" ", 0) == 0) || (line.rfind("_", 0) == 0)) {
         commands.push_back(line);
       }
+    }
+  }
+}
+
+void Storyboard::load_sprite(std::string header,
+                             std::vector<std::string> commands) {
+  auto items = StoryboardUtils::parse_commas(header);
+
+  std::string texture_path =
+      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/" +
+      items[3]
+          .replace(items[3].find('"'), sizeof('"'), "")
+          .replace(items[3].find('"'), sizeof('"'), "");
+
+  for (int i = 0; i < 25; i++) {
+    try {
+      texture_path =
+          texture_path.replace(texture_path.find('\\'), sizeof('\\'), "/");
+    } catch (...) {
+      continue;
+    }
+  }
+
+  if (items[0] == "Sprite") {
+
+    Math::Vector2<float> position;
+    position.x = std::atof(items[4].c_str());
+    position.y = std::atof(items[5].c_str());
+
+    std::shared_ptr<Sprite> current_sprite = std::make_shared<Sprite>();
+    current_sprite->textures.push_back(assets.load_image(texture_path));
+
+    std::printf("%i", current_sprite->textures[0]->size.width);
+
+    current_sprite->position.x = position.x;
+    current_sprite->position.y = position.y;
+
+    current_sprite->size.x = current_sprite->textures[0]->size.width;
+    current_sprite->size.y = current_sprite->textures[0]->size.height;
+
+    current_sprite->transforms =
+        StoryboardUtils::parse_sprite_commands(commands);
+
+    if (current_sprite->transforms.size() == 0) {
+      return;
+    }
+
+    float min_time = current_sprite->transforms[0]->time.start;
+    float max_time = 0.0;
+
+    for (auto const &transform : current_sprite->transforms) {
+      min_time = std::min<float>(min_time, transform->time.start);
+      max_time = std::max<float>(max_time, transform->time.start);
+    }
+
+    current_sprite->time.start = min_time;
+    current_sprite->time.end = max_time;
+
+    sprites.push_back(current_sprite);
+  }
+}
+
+// Draw
+void Storyboard::draw(float time) {
+  // for (auto const &sprite : sprites) {
+  //   if (true) {
+  //     // std::printf("%f %f \n", sprite->time.start, sprite->time.end);
+  //     sprite->update(time);
+  //     sprite->draw();
+  //   }
+  // }
+
+  for (int i = sprites.size() - 1; i > 0; i--) {
+    if (time >= sprites[i]->time.start &&
+        time <= sprites[i]->time.end + 50.0f) {
+      sprites[i]->update(time);
+      sprites[i]->draw();
     }
   }
 }
