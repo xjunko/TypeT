@@ -40,7 +40,7 @@ void BASS::initialize() {
   int BASS_RATE = 48000;
 
   if (BASS_Init(DEVICE_ID, BASS_RATE, 0, 0, 0) != 0) {
-    std::printf("[Audio] Bass started!");
+    std::printf("[Audio] Bass started! \n");
 
     // Mixer
     auto MASTER_MIXER = BASS_Mixer_StreamCreate(BASS_RATE, 2, MIXER_FLAGS);
@@ -51,7 +51,7 @@ void BASS::initialize() {
 
     mixer = MASTER_MIXER;
   } else {
-    std::printf("[Audio] Error, failed to start BASS!");
+    std::printf("[Audio] Error, failed to start BASS! \n");
   }
 }
 
