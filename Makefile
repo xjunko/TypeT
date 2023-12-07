@@ -15,6 +15,9 @@ CFLAGS += -Wl,-rpath=libs/bass/DLLs/,-Llibs/bass/DLLs/
 LDFLAGS += -lbass -lbass_fx -lbassmix
 INCLUDES += -Ilibs/bass
 
+# DEBUG
+CFLAGS += -ggdb3 -g
+
 # CFLAGS += -O2
 
 .PHONY: all
