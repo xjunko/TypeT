@@ -21,20 +21,19 @@ const sg_pass_action DEFAULT_PASS = {
 
 class Context {
 public:
-  std::unique_ptr<AssetManager> assets;
-  std::unique_ptr<Sprite> sprite;
-
+  std::unique_ptr<Time::Limiter> limiter;
   std::shared_ptr<Audio::BASS> audio_mixer;
   std::shared_ptr<Audio::Track> audio_song;
 
-  std::unique_ptr<Time::Limiter> limiter;
-  std::shared_ptr<Transform::Transform> transform;
+  std::unique_ptr<AssetManager> assets;
+  std::unique_ptr<Storyboard> storyboard;
 
   float time;
 
   // FNs
   void begin();
   void end();
+  void update(float);
 };
 
 // Context
@@ -80,38 +79,17 @@ void initialize(void *user_data) {
 
   data->assets = std::make_unique<AssetManager>();
 
-  data->sprite = SpriteUtils::create_sprite_from_image_path(
-      "/home/junko/Downloads/junko.png");
-  std::printf("Valid: %b \n", data->sprite->textures[0]->valid);
-
-  // Transform TEST
-  data->transform =
-      Transform::create(Transform::Type::MOVE, Easing::linear,
-                        {100.0f, 5000.0f}, {0.0f, 0.0f}, {320.0f, 240.0f});
-
-  data->sprite->transforms.push_back(data->transform);
+  data->storyboard = std::make_unique<Storyboard>();
+  data->storyboard->parse_file(
+      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/Kushi - Sakura no "
+      "Zenya (Speed Up Ver.) (Taeyang).osb");
 }
 
 void draw(void *user_data) {
   Context *ctx = static_cast<Context *>(user_data);
   ctx->time = ctx->audio_song->get_position();
 
-  std::printf("\r %f \n", ctx->time);
-
-  {
-    ctx->time++;
-
-    if (ctx->time >= 5000) {
-      ctx->sprite.reset();
-    };
-  }
-
   ctx->begin();
-
-  if (ctx->time < 5000) {
-    ctx->sprite->update(float(ctx->time));
-    ctx->sprite->draw();
-  }
 
   ctx->end();
   ctx->limiter->sync();
