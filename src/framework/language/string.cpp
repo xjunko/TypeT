@@ -49,13 +49,18 @@ static inline std::string trim_copy(std::string s) {
   return s;
 }
 
-static inline std::vector<std::string> split(std::string s, std::string delim) {
-  std::stringstream ss(s);
-  std::istream_iterator<std::string> begin(ss);
-  std::istream_iterator<std::string> end;
-  std::vector<std::string> vstrings(begin, end);
+std::vector<std::string> split(std::string s, std::string delimiter) {
+  size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+  std::string token;
+  std::vector<std::string> res;
 
-  return vstrings;
+  while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+    token = s.substr(pos_start, pos_end - pos_start);
+    pos_start = pos_end + delim_len;
+    res.push_back(token);
+  }
+
+  res.push_back(s.substr(pos_start));
+  return res;
 }
-
 } // namespace StringUtils
