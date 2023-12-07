@@ -17,7 +17,7 @@ namespace TypeT {
 
 const sg_pass_action DEFAULT_PASS = {
     .colors[0] = {.load_action = SG_LOADACTION_CLEAR,
-                  .clear_value = {.r = 255, .g = 255, .b = 255, .a = 255}}};
+                  .clear_value = {.r = 0.1, .g = 0.1, .b = 0.1, .a = 1}}};
 
 class Context {
 public:
@@ -69,8 +69,9 @@ void initialize(void *user_data) {
   data->audio_mixer = std::make_shared<Audio::BASS>();
   data->audio_mixer->initialize();
 
-  data->audio_song = Audio::new_track("assets/Sakura No Zenya/[Nightcore].mp3",
-                                      data->audio_mixer);
+  data->audio_song = Audio::new_track(
+      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/[Nightcore].mp3",
+      data->audio_mixer);
   data->audio_song->play();
 
   // Init(s) fields
@@ -90,6 +91,8 @@ void draw(void *user_data) {
   ctx->time = ctx->audio_song->get_position();
 
   ctx->begin();
+
+  ctx->storyboard->draw(ctx->time);
 
   ctx->end();
   ctx->limiter->sync();
