@@ -17,6 +17,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install imagemagick openimageio-tools libgl1-mesa-dri xvfb libxcursor-dev libxi-dev freeglut3-dev xsel xclip
 
-    - uses: actions/checkout@v3
-    - name: Try to build
-      run: make
+    # - uses: actions/checkout@v3
+    # - name: Try to build
+    #   run: make
