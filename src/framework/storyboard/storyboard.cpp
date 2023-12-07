@@ -111,11 +111,10 @@ void Storyboard::load_sprite(std::string header,
                              std::vector<std::string> commands) {
   auto items = StoryboardUtils::parse_commas(header);
 
-  std::string texture_path =
-      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/" +
-      items[3]
-          .replace(items[3].find('"'), sizeof('"'), "")
-          .replace(items[3].find('"'), sizeof('"'), "");
+  std::string texture_path = "/home/junko/Projects/TypeT/assets/Future Candy/" +
+                             items[3]
+                                 .replace(items[3].find('"'), sizeof('"'), "")
+                                 .replace(items[3].find('"'), sizeof('"'), "");
 
   for (int i = 0; i < 25; i++) {
     try {
@@ -135,8 +134,6 @@ void Storyboard::load_sprite(std::string header,
     std::shared_ptr<Sprite> current_sprite = std::make_shared<Sprite>();
     current_sprite->textures.push_back(assets.load_image(texture_path));
 
-    std::printf("%i", current_sprite->textures[0]->size.width);
-
     current_sprite->position.x = position.x;
     current_sprite->position.y = position.y;
 
@@ -151,15 +148,18 @@ void Storyboard::load_sprite(std::string header,
     }
 
     float min_time = current_sprite->transforms[0]->time.start;
-    float max_time = 0.0;
+    float max_time =
+        current_sprite->transforms[current_sprite->transforms.size() - 1]
+            ->time.end;
 
     for (auto const &transform : current_sprite->transforms) {
       min_time = std::min<float>(min_time, transform->time.start);
-      max_time = std::max<float>(max_time, transform->time.start);
+      max_time = std::max<float>(max_time, transform->time.end);
     }
 
     current_sprite->time.start = min_time;
     current_sprite->time.end = max_time;
+    current_sprite->reset_to_transforms();
 
     sprites.push_back(current_sprite);
   }
@@ -176,8 +176,9 @@ void Storyboard::draw(float time) {
   // }
 
   for (int i = sprites.size() - 1; i > 0; i--) {
-    if (time >= sprites[i]->time.start &&
-        time <= sprites[i]->time.end + 50.0f) {
+    // if (time >= sprites[i]->time.start &&
+    //     time <= sprites[i]->time.end + 50.0f) {
+    if (true) {
       sprites[i]->update(time);
       sprites[i]->draw();
     }

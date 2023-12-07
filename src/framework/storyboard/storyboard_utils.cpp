@@ -49,25 +49,43 @@ parse_command(std::vector<std::string> items) {
   }
 
   float end_time = std::max<float>(std::atof(items[3].c_str()), start_time);
-  int argument;
+  int argument = 0;
 
   // HACK: bruh
   if (end_time == start_time) {
     end_time = start_time + 1.0f;
   }
 
-  switch (command_type[0]) {
-  case 'F': {
+  if (command_type == "F" || command_type == "R" || command_type == "S" ||
+      command_type == "MX" || command_type == "MY") {
     argument = 1;
-    break;
-  }
-
-  case 'M': {
+  } else if (command_type == "M" || command_type == "V") {
     argument = 2;
-    break;
-  }
+  } else if (command_type == "C") {
+    argument = 3;
   }
 
+  // Transform
+  std::shared_ptr<Transform::Transform> current_transform =
+      std::make_shared<Transform::Transform>();
+
+  current_transform->type = Transform::Type::_INVALID;
+  current_transform->time.start = start_time;
+  current_transform->time.end = end_time;
+
+  if (argument == 0) {
+    if (command_type == "A") {
+      current_transform->type = Transform::Type::ADDITIVE;
+    } else if (command_type == "V") {
+      current_transform->type = Transform::Type::FLIP_VERT;
+    } else if (command_type == "H") {
+      current_transform->type = Transform::Type::FLIP_HORIZ;
+    }
+
+    return current_transform;
+  }
+
+  // Sections parsing
   std::vector<std::string> parameters(items.begin() + 4, items.end());
   std::vector<std::vector<float>> sections;
   int sections_length = parameters.size() / argument;
@@ -85,40 +103,33 @@ parse_command(std::vector<std::string> items) {
     }
   }
 
-  if (sections_length == 1) {
+  if (sections.size() == 1) {
     sections.push_back(sections[0]);
   }
 
-  // Types
-  if (command_type == "M") {
-    std::shared_ptr<Transform::Transform> move_transform =
-        std::make_shared<Transform::Transform>();
+  // Multiple arguments and type
+  current_transform->easing = Easing::linear;
+  current_transform->before = sections[0];
+  current_transform->after = sections[1];
 
-    move_transform->type = Transform::Type::MOVE;
-    move_transform->easing = Easing::linear;
-    move_transform->time = {.start = start_time, .end = end_time};
-    move_transform->before = sections[0];
-    move_transform->after = sections[1];
+  std::map<std::string, Transform::Type> transform_mapping = {
+      {"F", Transform::Type::FADE},
+      {"R", Transform::Type::ANGLE},
+      {"S", Transform::Type::SCALE_MULTIPLY_BY},
+      {"MX", Transform::Type::MOVE_X},
+      {"MY", Transform::Type::MOVE_Y},
+      {"M", Transform::Type::MOVE},
+      {"V", Transform::Type::SCALE_VECTOR},
+      {"C", Transform::Type::COLOR},
+  };
 
-    return move_transform;
-  } else if (command_type == "F") {
-    std::shared_ptr<Transform::Transform> move_transform =
-        std::make_shared<Transform::Transform>();
+  for (const auto &element : transform_mapping) {
+    if (command_type == element.first) {
+      current_transform->type = element.second;
+    }
 
-    move_transform->type = Transform::Type::FADE;
-    move_transform->easing = Easing::linear;
-    move_transform->time = {.start = start_time, .end = end_time};
-    move_transform->before = sections[0];
-    move_transform->after = sections[1];
-
-    std::printf("%f %f \n", sections[0][0], sections[1][0]);
+    return current_transform;
   }
-
-  std::shared_ptr<Transform::Transform> invalid_transform =
-      std::make_shared<Transform::Transform>();
-  invalid_transform->type = Transform::Type::_INVALID;
-
-  return invalid_transform;
 }
 
 std::vector<std::shared_ptr<Transform::Transform>>

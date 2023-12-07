@@ -69,9 +69,8 @@ void initialize(void *user_data) {
   data->audio_mixer = std::make_shared<Audio::BASS>();
   data->audio_mixer->initialize();
 
-  data->audio_song = Audio::new_track(
-      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/[Nightcore].mp3",
-      data->audio_mixer);
+  data->audio_song =
+      Audio::new_track("assets/Future Candy/audio.mp3", data->audio_mixer);
   data->audio_song->play();
 
   // Init(s) fields
@@ -82,8 +81,7 @@ void initialize(void *user_data) {
 
   data->storyboard = std::make_unique<Storyboard>();
   data->storyboard->parse_file(
-      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/Kushi - Sakura no "
-      "Zenya (Speed Up Ver.) (Taeyang).osb");
+      "assets/Future Candy/YUC'e - Future Candy (Nathan).osb");
 }
 
 void draw(void *user_data) {
