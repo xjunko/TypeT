@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install imagemagick openimageio-tools libgl1-mesa-dri xvfb libxcursor-dev libxi-dev freeglut3-dev xsel xclip
+
     - uses: actions/checkout@v3
-    - name: Build 
+    - name: Try to build
       run: make
