@@ -25,4 +25,10 @@ static inline std::vector<std::string> parse_variables(std::string s) {
   return StringUtils::split(ss, "=");
 }
 
+static inline std::vector<std::string> parse_commas(std::string s) {
+  auto ss = s;
+  StringUtils::trim(ss);
+  return StringUtils::split(ss, ",");
+}
+
 } // namespace StoryboardUtils
