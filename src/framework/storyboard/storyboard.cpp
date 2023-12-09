@@ -119,11 +119,11 @@ void Storyboard::load_sprite(std::string header,
                              std::vector<std::string> commands) {
   auto items = StoryboardUtils::parse_commas(header);
 
+  std::string filename = items[3]
+                             .replace(items[3].find('"'), sizeof('"'), "")
+                             .replace(items[3].find('"'), sizeof('"'), "");
   std::string texture_path =
-      "/run/media/junko/4th/Projects/TypeT/assets/Future Candy/" +
-      items[3]
-          .replace(items[3].find('"'), sizeof('"'), "")
-          .replace(items[3].find('"'), sizeof('"'), "");
+      "/run/media/junko/4th/Projects/TypeT/assets/Future Candy/" + filename;
 
   for (int i = 0; i < 25; i++) {
     try {
