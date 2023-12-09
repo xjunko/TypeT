@@ -137,7 +137,7 @@ void Sprite::update(float time) {
 // Draw
 void Sprite::draw() {
   if (!textures[texture_frame]) {
-    std::printf("INVALID TEXTUER!!!");
+    // std::printf("INVALID TEXTUER!!!");
     return; // Welp, shit i guess.
   }
 
@@ -169,8 +169,9 @@ create_sprite_from_image_path(std::string path_to_file) {
   sprite->textures.push_back(texture);
   sprite.get()->textures.push_back(texture);
 
-  std::printf("Position: %f | %f \n", sprite->position.x, sprite->position.y);
-  std::printf("Size: %f | %f\n", sprite->size.x, sprite->size.y);
+  // std::printf("Position: %f | %f \n", sprite->position.x,
+  // sprite->position.y); std::printf("Size: %f | %f\n", sprite->size.x,
+  // sprite->size.y);
 
   return sprite;
 }

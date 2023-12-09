@@ -97,7 +97,8 @@ void Storyboard::parse_lines(std::vector<std::string> lines) {
       if ((line_copy.rfind("Sprite", 0) == 0) ||
           (line_copy.rfind("Animation", 0) == 0)) {
         if (current_sprite.size() != 0) {
-          std::printf("[Storyboard] Load, %zu commands! \n", commands.size());
+          // std::printf("[Storyboard] Load, %zu commands! \n",
+          // commands.size());
           load_sprite(current_sprite, commands);
         }
 
@@ -123,8 +124,9 @@ void Storyboard::load_sprite(std::string header,
   std::string filename = items[3]
                              .replace(items[3].find('"'), sizeof('"'), "")
                              .replace(items[3].find('"'), sizeof('"'), "");
+
   std::string texture_path =
-      "/run/media/junko/4th/Projects/TypeT/assets/Sakura No Zenya/" + filename;
+      "/run/media/junko/4th/Projects/TypeT/assets/Future Candy/" + filename;
 
   for (int i = 0; i < 25; i++) {
     try {
@@ -135,8 +137,11 @@ void Storyboard::load_sprite(std::string header,
     }
   }
 
+  StringUtils::trim(texture_path);
+
   if (!std::filesystem::exists(texture_path)) {
-    std::printf("[Sprite] Texture not found: %s", texture_path.c_str());
+    std::printf("[Sprite] Texture not found: %s \n", texture_path.c_str());
+    exit(1);
   }
 
   if (items[0] == "Sprite") {
@@ -177,7 +182,7 @@ void Storyboard::load_sprite(std::string header,
     current_sprite->time.end = max_time;
     current_sprite->reset_to_transforms();
 
-    std::printf("TIME: %f %f \n", min_time, max_time);
+    // std::printf("TIME: %f %f \n", min_time, max_time);
 
     sprites.push_back(current_sprite);
   }

@@ -57,7 +57,7 @@ public:
 };
 
 void Texture::initialize_sokol_image() {
-  std::printf("Init \n");
+  // std::printf("Init \n");
   sg_image_desc image_desc = {
       .width = size.width,
       .height = size.height,
