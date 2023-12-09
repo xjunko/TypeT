@@ -1,22 +1,11 @@
 #include <string>
 
 #include "../../math/vector.cpp"
+#include "../effects/additive.cpp"
+#include "../effects/normal.cpp"
 #include "sokol_gfx.h"
 #include "sokol_gl.h"
 #include "stb_image.h"
-
-// GLOBAL HACK -->
-sg_pipeline_desc alpha_pipdesc = {
-    .label = "alpha",
-    .colors[0] = {.blend = sg_blend_state{
-                      .enabled = true,
-                      .src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA,
-                      .dst_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA,
-                  }}};
-
-sgl_pipeline alpha_pipeline;
-bool alpha_init;
-// --> GLOBAL HACK
 
 using SokolImage = sg_image;
 using SokolSampler = sg_sampler;
@@ -49,7 +38,7 @@ public:
   // FNs
   void initialize_sokol_image();
   void draw(Math::Vector2<float> position, Math::Vector2<float> size,
-            sg_color color);
+            sg_color color, bool is_additive);
 
   // Debug
   Texture() { std::printf("[Texture] Created, %s \n", info.path.c_str()); }
@@ -92,11 +81,13 @@ void Texture::initialize_sokol_image() {
   sampler = sg_make_sampler(&smp_desc);
 }
 
+// Multiple defs
 void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
-                   sg_color color) {
-  if (!alpha_init) {
-    alpha_pipeline = sgl_make_pipeline(alpha_pipdesc);
-    alpha_init = true;
+                   sg_color color, bool is_additive) {
+
+  // Early checks
+  if (color.a <= 0.9) {
+    return;
   }
 
   // HACK:
@@ -119,7 +110,12 @@ void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
   float x1 = position.x + size.x;
   float y1 = position.y + size.y;
 
-  sgl_load_pipeline(alpha_pipeline);
+  if (is_additive) {
+    std::printf("ADDD \n");
+    sgl_load_pipeline(Additive::get());
+  } else {
+    sgl_load_pipeline(Normal::get());
+  }
 
   sgl_enable_texture();
   sgl_texture(image, sampler);
