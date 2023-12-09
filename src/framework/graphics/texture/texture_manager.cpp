@@ -11,8 +11,25 @@ public:
   std::map<std::string, std::shared_ptr<Texture>> textures;
 
   // FNs
+  void update();
   std::shared_ptr<Texture> load_image(std::string path);
 };
+
+void AssetManager::update() {
+  // Create a vector to store keys of textures to be removed
+  std::vector<std::string> to_remove;
+
+  for (auto const &element : textures) {
+    if (element.second.use_count() <= 1) {
+      to_remove.push_back(element.first);
+    }
+  }
+
+  for (const auto &key : to_remove) {
+    std::printf("[Assets] Texture removed: %s\n", key.c_str());
+    textures.erase(key);
+    }
+}
 
 std::shared_ptr<Texture> AssetManager::load_image(std::string path) {
   if (!std::filesystem::exists(path)) {
