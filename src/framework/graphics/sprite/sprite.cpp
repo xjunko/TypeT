@@ -13,7 +13,7 @@
 
 class Sprite {
 public:
-  Math::OriginType origin = Math::OriginType::TOP_LEFT;
+  Math::OriginType origin;
   Math::Vector2<float> position;
   Math::Vector2<float> size;
   Time::Time<float> time;
@@ -24,13 +24,25 @@ public:
   int texture_frame;
 
   bool is_additive;
-  sg_color color = {.r = 255, .g = 255, .b = 255, .a = 255};
+  sg_color color;
 
   // FNs
   void draw();
   void update(float);
   void apply_transform(std::shared_ptr<Transform::Transform>, float);
   void reset_to_transforms();
+
+  Sprite()
+      : origin(Math::OriginType::TOP_LEFT), position(), size(), time(),
+        angle(0.0f), textures(), texture_frame(0), is_additive(false),
+        color({255, 255, 255, 255}) {
+    textures.reserve(MAX_TEXTURE_LIMIT);
+  }
+
+  ~Sprite() {
+    transforms.clear();
+    textures.clear();
+  }
 };
 
 // Internal
@@ -109,14 +121,15 @@ void Sprite::reset_to_transforms() {
 }
 
 // Update
-const float hack_time_update_catch_up = 100.0f;
+const float MAX_TIME_CATCH_UP = 100.0f;
 void Sprite::update(float time) {
-  // O(n) tier shit but thisll works for now
-  for (int i = 0; i < transforms.size(); i++) {
-    if (time >= transforms[i]->time.start &&
-        time <= transforms[i]->time.end + hack_time_update_catch_up) {
-      apply_transform(transforms[i],
-                      std::min<float>(time, transforms[i]->time.end));
+  for (const auto &transform : transforms) {
+    if (time < transform->time.start) {
+      break;
+    }
+
+    if (time <= transform->time.end + MAX_TIME_CATCH_UP) {
+      apply_transform(transform, std::min(time, transform->time.end));
     }
   }
 }

@@ -22,6 +22,7 @@ public:
 
   void load_sprite(std::string header, std::vector<std::string> commands);
 
+  void update(float time);
   void draw(float time);
 };
 
@@ -182,21 +183,30 @@ void Storyboard::load_sprite(std::string header,
   }
 }
 
+// Update
+void Storyboard::update(float time) {
+  auto it = sprites.begin();
+  while (it != sprites.end()) {
+    auto const &sprite = *it;
+    sprite->update(time);
+
+    if (time > sprite->time.end) {
+      std::printf("[Storyboard] Removed sprites, %zu left! \n", sprites.size());
+      it = sprites.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  assets.update();
+}
 // Draw
 void Storyboard::draw(float time) {
-  // for (auto const &sprite : sprites) {
-  //   if (true) {
-  //     sprite->update(time);
-  //     sprite->draw();
-  //   }
-  // }
+  update(time);
 
-  // for (int i = sprites.size() - 1; i >= 0; i--) {
   for (int i = 0; i < sprites.size(); i++) {
-    // auto s_time = sprites[i]->time;
     if (time >= sprites[i]->time.start &&
         time <= sprites[i]->time.end + 50.0f) {
-      sprites[i]->update(time);
       sprites[i]->draw();
     }
   }
