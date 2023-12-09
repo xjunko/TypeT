@@ -45,7 +45,7 @@ parse_command(std::vector<std::string> items) {
 
   float start_time = std::atof(items[2].c_str());
 
-  if (items[3] == "") {
+  if (StringUtils::trim_copy(items[3]).size() == 0) {
     items[3] = items[2];
   }
 
