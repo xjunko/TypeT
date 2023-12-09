@@ -20,6 +20,7 @@ public:
   std::vector<std::shared_ptr<Texture>> textures;
   int texture_frame;
 
+  bool is_additive;
   sg_color color = {.r = 255, .g = 255, .b = 255, .a = 255};
 
   // FNs
@@ -71,6 +72,11 @@ void Sprite::apply_transform(
     size.y = textures[texture_frame]->size.height * multiplier;
     break;
   }
+
+  case Transform::Type::ADDITIVE: {
+    is_additive = true;
+    break;
+  }
   }
 }
 
@@ -103,7 +109,7 @@ void Sprite::draw() {
     return; // Welp, shit i guess.
   }
 
-  textures[texture_frame]->draw(position, size, color);
+  textures[texture_frame]->draw(position, size, color, is_additive);
 }
 
 // Helper FNs
