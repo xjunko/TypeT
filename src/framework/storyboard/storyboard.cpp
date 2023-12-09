@@ -120,7 +120,7 @@ void Storyboard::load_sprite(std::string header,
   auto items = StoryboardUtils::parse_commas(header);
 
   std::string texture_path =
-      "/run/media/junko/4th/Projects/TypeT/assets/Test/" +
+      "/run/media/junko/4th/Projects/TypeT/assets/Future Candy/" +
       items[3]
           .replace(items[3].find('"'), sizeof('"'), "")
           .replace(items[3].find('"'), sizeof('"'), "");
@@ -143,9 +143,12 @@ void Storyboard::load_sprite(std::string header,
     position.x = std::atof(items[4].c_str());
     position.y = std::atof(items[5].c_str());
 
+    Math::OriginType origin = Math::get_origin_from_str(items[2]);
+
     std::shared_ptr<Sprite> current_sprite = std::make_shared<Sprite>();
     current_sprite->textures.push_back(assets.load_image(texture_path));
 
+    current_sprite->origin = origin;
     current_sprite->position.x = position.x;
     current_sprite->position.y = position.y;
 
@@ -173,25 +176,28 @@ void Storyboard::load_sprite(std::string header,
     current_sprite->time.end = max_time;
     current_sprite->reset_to_transforms();
 
+    std::printf("TIME: %f %f \n", min_time, max_time);
+
     sprites.push_back(current_sprite);
   }
 }
 
 // Draw
 void Storyboard::draw(float time) {
-  for (auto const &sprite : sprites) {
-    if (true) {
-      sprite->update(time);
-      sprite->draw();
-    }
-  }
-
-  // for (int i = sprites.size() - 1; i > 0; i--) {
-  //   // if (time >= sprites[i]->time.start &&
-  //   //     time <= sprites[i]->time.end + 50.0f) {
+  // for (auto const &sprite : sprites) {
   //   if (true) {
-  //     sprites[i]->update(time);
-  //     sprites[i]->draw();
+  //     sprite->update(time);
+  //     sprite->draw();
   //   }
   // }
+
+  // for (int i = sprites.size() - 1; i >= 0; i--) {
+  for (int i = 0; i < sprites.size(); i++) {
+    // auto s_time = sprites[i]->time;
+    if (time >= sprites[i]->time.start &&
+        time <= sprites[i]->time.end + 50.0f) {
+      sprites[i]->update(time);
+      sprites[i]->draw();
+    }
+  }
 }

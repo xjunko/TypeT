@@ -38,7 +38,8 @@ public:
   // FNs
   void initialize_sokol_image();
   void draw(Math::Vector2<float> position, Math::Vector2<float> size,
-            sg_color color, bool is_additive);
+            sg_color color, float angle, Math::OriginType origin,
+            bool is_additive);
 
   // Debug
   Texture() { std::printf("[Texture] Created, %s \n", info.path.c_str()); }
@@ -83,20 +84,21 @@ void Texture::initialize_sokol_image() {
 
 // Multiple defs
 void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
-                   sg_color color, bool is_additive) {
-
-  // Early checks
-  if (color.a <= 0.9) {
-    return;
-  }
+                   sg_color color, float angle, Math::OriginType origin,
+                   bool is_additive) {
 
   // HACK:
-  float scale_factor = 0.5;
+  float scale_factor = 1.5;
+  float offset_hack_x = 160.0f;
+  float offset_hack_y = -2.0f;
 
   position.x *= scale_factor;
   position.y *= scale_factor;
   size.x *= scale_factor;
   size.y *= scale_factor;
+
+  position.x += offset_hack_x;
+  position.y += offset_hack_y;
 
   // HACK:
   float u0 = 0.0f / size.x;
@@ -111,7 +113,6 @@ void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
   float y1 = position.y + size.y;
 
   if (is_additive) {
-    std::printf("ADDD \n");
     sgl_load_pipeline(Additive::get());
   } else {
     sgl_load_pipeline(Normal::get());
@@ -119,6 +120,62 @@ void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
 
   sgl_enable_texture();
   sgl_texture(image, sampler);
+
+  if (angle != 0) {
+    float width = size.x;
+    float height = size.y;
+
+    sgl_push_matrix();
+
+    // NOTE: CUCK CODE INCOMING
+    switch (origin) {
+    case Math::OriginType::TOP_LEFT:
+      sgl_translate(x0, y0, 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0, -y0, 0);
+      break;
+    case Math::OriginType::TOP_CENTRE:
+      sgl_translate(x0 + (width / 2), y0 - height, 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0 - (width / 2), -y0, 0);
+      break;
+    case Math::OriginType::TOP_RIGHT:
+      sgl_translate(x0 + width, y0 - height, 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0 - width, -y0, 0);
+      break;
+    case Math::OriginType::CENTRE_LEFT:
+      sgl_translate(x0, y0 + (height / 2), 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0, -y0 - (height / 2), 0);
+      break;
+    case Math::OriginType::CENTRE:
+      sgl_translate(x0 + (width / 2), y0 + (height / 2), 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0 - (width / 2), -y0 - (height / 2), 0);
+      break;
+    case Math::OriginType::CENTRE_RIGHT:
+      sgl_translate(x0 + width, y0 + (height / 2), 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0 - width, -y0 - (height / 2), 0);
+      break;
+    case Math::OriginType::BOTTOM_LEFT:
+      sgl_translate(x0, y0 + height, 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0, -y0 - height, 0);
+      break;
+    case Math::OriginType::BOTTOM_CENTRE:
+      sgl_translate(x0 + (width / 2), y0 + height, 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0 - (width / 2), -y0 - height, 0);
+      break;
+    case Math::OriginType::BOTTOM_RIGHT:
+      sgl_translate(x0 + width, y0 + height, 0);
+      sgl_rotate(-angle, 0, 0, 1);
+      sgl_translate(-x0 - width, -y0 - height, 0);
+      break;
+    }
+  }
 
   sgl_begin_quads();
   sgl_c4b(color.r, color.g, color.b, color.a);
@@ -129,6 +186,11 @@ void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
   sgl_v3f_t2f(x0, y1, 1.0f, u0, v1);
 
   sgl_end();
+
+  if (angle != 0) {
+    sgl_pop_matrix();
+  }
+
   sgl_disable_texture();
 }
 

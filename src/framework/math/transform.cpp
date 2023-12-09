@@ -12,7 +12,6 @@ enum Type {
   ANGLE,
   COLOR,
   FADE,
-  SCALE,
   SCALE_MULTIPLY_BY,
   ADDITIVE,
   FLIP_VERT,
@@ -32,6 +31,7 @@ public:
   // FNs
   float as_one(float);
   std::tuple<float, float> as_two(float);
+  std::tuple<float, float, float> as_three(float);
 };
 
 float Transform::as_one(float transform_time) {
@@ -44,6 +44,15 @@ std::tuple<float, float> Transform::as_two(float transform_time) {
                                 after[0] - before[0], time.duration()),
                          easing(transform_time - time.start, before[1],
                                 after[1] - before[1], time.duration()));
+}
+
+std::tuple<float, float, float> Transform::as_three(float transform_time) {
+  return std::make_tuple(easing(transform_time - time.start, before[0],
+                                after[0] - before[0], time.duration()),
+                         easing(transform_time - time.start, before[1],
+                                after[1] - before[1], time.duration()),
+                         easing(transform_time - time.start, before[2],
+                                after[2] - before[2], time.duration()));
 }
 
 // Helper function

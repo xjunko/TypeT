@@ -8,13 +8,16 @@
 #include "../../math/transform.cpp"
 #include "../texture/texture_manager.cpp"
 
+#define CIRCLE_PI 3.141592653589793238462643383279502884L
 #define MAX_TEXTURE_LIMIT 10
 
 class Sprite {
 public:
+  Math::OriginType origin = Math::OriginType::TOP_LEFT;
   Math::Vector2<float> position;
   Math::Vector2<float> size;
   Time::Time<float> time;
+  float angle;
 
   std::vector<std::shared_ptr<Transform::Transform>> transforms;
   std::vector<std::shared_ptr<Texture>> textures;
@@ -35,6 +38,7 @@ void Sprite::apply_transform(
     std::shared_ptr<Transform::Transform> current_transform,
     float current_time) {
   switch (current_transform->type) {
+
   case Transform::Type::MOVE: {
     auto [x, y] = current_transform->as_two(current_time);
     position.x = x;
@@ -59,6 +63,14 @@ void Sprite::apply_transform(
     break;
   }
 
+  case Transform::Type::COLOR: {
+    auto [r, g, b] = current_transform->as_three(current_time);
+    color.r = r;
+    color.g = g;
+    color.b = b;
+    break;
+  }
+
   case Transform::Type::SCALE_VECTOR: {
     auto [x, y] = current_transform->as_two(current_time);
     size.x = textures[texture_frame]->size.width * x;
@@ -75,7 +87,12 @@ void Sprite::apply_transform(
 
   case Transform::Type::ADDITIVE: {
     is_additive = true;
+    exit(1);
     break;
+  }
+
+  case Transform::Type::ANGLE: {
+    angle = (current_transform->as_one(current_time));
   }
   }
 }
@@ -92,12 +109,14 @@ void Sprite::reset_to_transforms() {
 }
 
 // Update
+const float hack_time_update_catch_up = 100.0f;
 void Sprite::update(float time) {
   // O(n) tier shit but thisll works for now
   for (int i = 0; i < transforms.size(); i++) {
     if (time >= transforms[i]->time.start &&
-        time <= transforms[i]->time.end + 50.0f) {
-      apply_transform(transforms[i], time);
+        time <= transforms[i]->time.end + hack_time_update_catch_up) {
+      apply_transform(transforms[i],
+                      std::min<float>(time, transforms[i]->time.end));
     }
   }
 }
@@ -109,7 +128,11 @@ void Sprite::draw() {
     return; // Welp, shit i guess.
   }
 
-  textures[texture_frame]->draw(position, size, color, is_additive);
+  auto offset_origin = Math::get_offset(origin, size);
+  auto offset_position = position.minus(offset_origin);
+
+  textures[texture_frame]->draw(offset_position, size, color, angle, origin,
+                                is_additive);
 }
 
 // Helper FNs
