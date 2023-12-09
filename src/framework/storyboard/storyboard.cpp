@@ -43,6 +43,8 @@ void Storyboard::parse_file(std::string path) {
   } else {
     std::printf("[Storyboard] Failed to read storyboard file! \n");
   }
+
+  std::printf("[Storyboard] Loaded %zu sprites!", sprites.size());
 }
 
 void Storyboard::parse_lines(std::vector<std::string> lines) {
@@ -105,16 +107,23 @@ void Storyboard::parse_lines(std::vector<std::string> lines) {
       }
     }
   }
+
+  // Somehow missed it
+  if (current_sprite.size() > 0) {
+    load_sprite(current_sprite, commands);
+    commands.clear();
+  }
 }
 
 void Storyboard::load_sprite(std::string header,
                              std::vector<std::string> commands) {
   auto items = StoryboardUtils::parse_commas(header);
 
-  std::string texture_path = "/home/junko/Projects/TypeT/assets/Future Candy/" +
-                             items[3]
-                                 .replace(items[3].find('"'), sizeof('"'), "")
-                                 .replace(items[3].find('"'), sizeof('"'), "");
+  std::string texture_path =
+      "/run/media/junko/4th/Projects/TypeT/assets/Test/" +
+      items[3]
+          .replace(items[3].find('"'), sizeof('"'), "")
+          .replace(items[3].find('"'), sizeof('"'), "");
 
   for (int i = 0; i < 25; i++) {
     try {
@@ -125,8 +134,11 @@ void Storyboard::load_sprite(std::string header,
     }
   }
 
-  if (items[0] == "Sprite") {
+  if (!std::filesystem::exists(texture_path)) {
+    std::printf("[Sprite] Texture not found: %s", texture_path.c_str());
+  }
 
+  if (items[0] == "Sprite") {
     Math::Vector2<float> position;
     position.x = std::atof(items[4].c_str());
     position.y = std::atof(items[5].c_str());
@@ -167,20 +179,19 @@ void Storyboard::load_sprite(std::string header,
 
 // Draw
 void Storyboard::draw(float time) {
-  // for (auto const &sprite : sprites) {
-  //   if (true) {
-  //     // std::printf("%f %f \n", sprite->time.start, sprite->time.end);
-  //     sprite->update(time);
-  //     sprite->draw();
-  //   }
-  // }
-
-  for (int i = sprites.size() - 1; i > 0; i--) {
-    // if (time >= sprites[i]->time.start &&
-    //     time <= sprites[i]->time.end + 50.0f) {
+  for (auto const &sprite : sprites) {
     if (true) {
-      sprites[i]->update(time);
-      sprites[i]->draw();
+      sprite->update(time);
+      sprite->draw();
     }
   }
+
+  // for (int i = sprites.size() - 1; i > 0; i--) {
+  //   // if (time >= sprites[i]->time.start &&
+  //   //     time <= sprites[i]->time.end + 50.0f) {
+  //   if (true) {
+  //     sprites[i]->update(time);
+  //     sprites[i]->draw();
+  //   }
+  // }
 }

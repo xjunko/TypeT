@@ -1,8 +1,9 @@
+#include <string>
+
 #include "../../math/vector.cpp"
 #include "sokol_gfx.h"
 #include "sokol_gl.h"
 #include "stb_image.h"
-#include <string>
 
 // GLOBAL HACK -->
 sg_pipeline_desc alpha_pipdesc = {
@@ -124,7 +125,7 @@ void Texture::draw(Math::Vector2<float> position, Math::Vector2<float> size,
   sgl_texture(image, sampler);
 
   sgl_begin_quads();
-  sgl_c4b(color.r, color.g, color.b, 75);
+  sgl_c4b(color.r, color.g, color.b, color.a);
 
   sgl_v3f_t2f(x0, y0, 1.0f, u0, v0);
   sgl_v3f_t2f(x1, y0, 1.0f, u1, v0);

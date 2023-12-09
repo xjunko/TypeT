@@ -1,11 +1,12 @@
 #pragma once
-#include "../../math/time.cpp"
-#include "../../math/transform.cpp"
-#include "../texture/texture_manager.cpp"
 #include <array>
 #include <set>
 #include <string>
 #include <vector>
+
+#include "../../math/time.cpp"
+#include "../../math/transform.cpp"
+#include "../texture/texture_manager.cpp"
 
 #define MAX_TEXTURE_LIMIT 10
 
@@ -19,7 +20,7 @@ public:
   std::vector<std::shared_ptr<Texture>> textures;
   int texture_frame;
 
-  sg_color color = {.r = 255, .g = 255, .b = 255, .a = 0};
+  sg_color color = {.r = 255, .g = 255, .b = 255, .a = 255};
 
   // FNs
   void draw();
@@ -32,7 +33,6 @@ public:
 void Sprite::apply_transform(
     std::shared_ptr<Transform::Transform> current_transform,
     float current_time) {
-
   switch (current_transform->type) {
   case Transform::Type::MOVE: {
     auto [x, y] = current_transform->as_two(current_time);

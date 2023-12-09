@@ -33,8 +33,8 @@ static inline std::vector<std::string> parse_commas(std::string s) {
 }
 
 // Parse Helpers
-std::shared_ptr<Transform::Transform> parse_command(
-    std::vector<std::string> items) {
+std::shared_ptr<Transform::Transform>
+parse_command(std::vector<std::string> items) {
   if (items[0] == "T" || items[0] == "L") {
     std::printf(
         "[Panic] Loop commands in normal parser!!! This should not happen!!");
@@ -133,8 +133,8 @@ std::shared_ptr<Transform::Transform> parse_command(
   return current_transform;
 }
 
-std::vector<std::shared_ptr<Transform::Transform>> parse_sprite_commands(
-    std::vector<std::string> commands) {
+std::vector<std::shared_ptr<Transform::Transform>>
+parse_sprite_commands(std::vector<std::string> commands) {
   std::vector<std::shared_ptr<Transform::Transform>> transforms;
 
   for (std::string subcommand : commands) {
@@ -154,4 +154,4 @@ std::vector<std::shared_ptr<Transform::Transform>> parse_sprite_commands(
   return transforms;
 }
 
-}  // namespace StoryboardUtils
+} // namespace StoryboardUtils
