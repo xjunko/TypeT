@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../language/string.cpp"
 #include <string>
 #include <vector>
+
+#include "../language/string.cpp"
 
 namespace StoryboardUtils {
 
@@ -32,8 +33,8 @@ static inline std::vector<std::string> parse_commas(std::string s) {
 }
 
 // Parse Helpers
-std::shared_ptr<Transform::Transform>
-parse_command(std::vector<std::string> items) {
+std::shared_ptr<Transform::Transform> parse_command(
+    std::vector<std::string> items) {
   if (items[0] == "T" || items[0] == "L") {
     std::printf(
         "[Panic] Loop commands in normal parser!!! This should not happen!!");
@@ -127,13 +128,13 @@ parse_command(std::vector<std::string> items) {
     if (command_type == element.first) {
       current_transform->type = element.second;
     }
-
-    return current_transform;
   }
+
+  return current_transform;
 }
 
-std::vector<std::shared_ptr<Transform::Transform>>
-parse_sprite_commands(std::vector<std::string> commands) {
+std::vector<std::shared_ptr<Transform::Transform>> parse_sprite_commands(
+    std::vector<std::string> commands) {
   std::vector<std::shared_ptr<Transform::Transform>> transforms;
 
   for (std::string subcommand : commands) {
@@ -153,4 +154,4 @@ parse_sprite_commands(std::vector<std::string> commands) {
   return transforms;
 }
 
-} // namespace StoryboardUtils
+}  // namespace StoryboardUtils
