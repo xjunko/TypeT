@@ -29,7 +29,7 @@ enum OriginType {
 
 const std::map<std::string, OriginType> ORIGIN_STRING_TO_ENUM_MAP = {
     {"TopLeft", TOP_LEFT},
-    {"TopCenter", TOP_CENTRE},
+    {"TopCentre", TOP_CENTRE},
     {"TopRight", TOP_RIGHT},
     {"CentreLeft", CENTRE_LEFT},
     {"Centre", CENTRE},
