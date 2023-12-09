@@ -124,7 +124,7 @@ void Storyboard::load_sprite(std::string header,
                              .replace(items[3].find('"'), sizeof('"'), "")
                              .replace(items[3].find('"'), sizeof('"'), "");
   std::string texture_path =
-      "/run/media/junko/4th/Projects/TypeT/assets/Future Candy/" + filename;
+      "/run/media/junko/4th/Projects/TypeT/assets/Sakura No Zenya/" + filename;
 
   for (int i = 0; i < 25; i++) {
     try {

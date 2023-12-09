@@ -54,7 +54,7 @@ parse_command(std::vector<std::string> items) {
 
   // HACK: bruh
   if (end_time == start_time) {
-    end_time = start_time + 1.0f;
+    end_time = start_time + 10.0f;
   }
 
   if (command_type == "F" || command_type == "R" || command_type == "S" ||
@@ -133,6 +133,11 @@ parse_command(std::vector<std::string> items) {
   return current_transform;
 }
 
+bool compare_transform(const std::shared_ptr<Transform::Transform> &a,
+                       const std::shared_ptr<Transform::Transform> &b) {
+  return a->time.start < b->time.start;
+}
+
 std::vector<std::shared_ptr<Transform::Transform>>
 parse_sprite_commands(std::vector<std::string> commands) {
   std::vector<std::shared_ptr<Transform::Transform>> transforms;
@@ -150,6 +155,8 @@ parse_sprite_commands(std::vector<std::string> commands) {
       transforms.push_back(transform);
     }
   }
+
+  std::sort(transforms.begin(), transforms.end(), compare_transform);
 
   return transforms;
 }

@@ -69,19 +69,20 @@ void initialize(void *user_data) {
   data->audio_mixer = std::make_shared<Audio::BASS>();
   data->audio_mixer->initialize();
 
-  data->audio_song =
-      Audio::new_track("assets/Future Candy/audio.mp3", data->audio_mixer);
-  data->audio_song->play();
+  data->audio_song = Audio::new_track("assets/Sakura No Zenya/[Nightcore].mp3",
+                                      data->audio_mixer);
 
   // Init(s) fields
   data->limiter = std::make_unique<Time::Limiter>();
-  data->limiter->fps = 24;
+  data->limiter->fps = 60;
 
   data->assets = std::make_unique<AssetManager>();
 
   data->storyboard = std::make_unique<Storyboard>();
-  data->storyboard->parse_file(
-      "assets/Future Candy/YUC'e - Future Candy (Nathan).osb");
+  data->storyboard->parse_file("assets/Sakura No Zenya/Kushi - Sakura no Zenya "
+                               "(Speed Up Ver.) (Taeyang).osb");
+
+  data->audio_song->play(); // Should be fine now.
 }
 
 void draw(void *user_data) {
