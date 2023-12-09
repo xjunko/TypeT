@@ -101,7 +101,7 @@ void Sprite::reset_to_transforms() {
   std::set<Transform::Type> handled;
 
   for (auto const &transform : transforms) {
-    if (handled.find(transform->type) != handled.end()) {
+    if (handled.find(transform->type) == handled.end()) {
       apply_transform(transform, transform->time.start);
       handled.insert(transform->type);
     }
