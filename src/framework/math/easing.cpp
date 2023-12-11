@@ -1,4 +1,5 @@
 #include <cmath>
+#include <map>
 
 namespace Easing {
 
@@ -166,6 +167,73 @@ float elastic_in_out(float _t, float b, float c, float d) {
   }
 
   return 0.0;
+}
+
+// Mapping
+enum class EasingEnum {
+  linear,
+  ease_out,
+  ease_in,
+  quad_in,
+  quad_out,
+  quad_in_out,
+  cubic_in,
+  cubic_out,
+  cubic_in_out,
+  quart_in,
+  quart_out,
+  quart_in_out,
+  quint_in,
+  quint_out,
+  quint_in_out,
+  sine_in,
+  sine_out,
+  sine_in_out,
+  expo_in,
+  expo_out,
+  expo_in_out,
+  circ_in,
+  circ_out,
+  circ_in_out,
+  elastic_in,
+  elastic_out,
+  elastic_half_out,
+  elasic_quart_out,
+  elastic_in_out,
+  back_in,
+  back_out,
+  back_in_out,
+  bounce_in,
+  bounce_out,
+  bounce_in_out
+};
+
+const std::map<int, EasingFunction> easing_maps = {
+    {static_cast<int>(EasingEnum::linear), linear},
+    {static_cast<int>(EasingEnum::quad_in), quad_in},
+    {static_cast<int>(EasingEnum::quad_out), quad_out},
+    {static_cast<int>(EasingEnum::quad_in_out), quad_in_out},
+    {static_cast<int>(EasingEnum::quart_in), quart_in},
+    {static_cast<int>(EasingEnum::quart_out), quart_out},
+    {static_cast<int>(EasingEnum::quart_in_out), quart_in_out},
+    {static_cast<int>(EasingEnum::quint_in), quint_in},
+    {static_cast<int>(EasingEnum::quint_out), quint_out},
+    {static_cast<int>(EasingEnum::quint_in_out), quint_in_out},
+    {static_cast<int>(EasingEnum::sine_in), sine_in},
+    {static_cast<int>(EasingEnum::sine_out), sine_out},
+    {static_cast<int>(EasingEnum::sine_in_out), sine_in_out},
+    {static_cast<int>(EasingEnum::elastic_in), elastic_in},
+    {static_cast<int>(EasingEnum::elastic_out), elastic_out},
+    {static_cast<int>(EasingEnum::elastic_in_out), elastic_in_out}};
+
+EasingFunction from_int(int i) {
+  auto result = easing_maps.find(i);
+
+  if (result != easing_maps.end()) {
+    return result->second;
+  }
+
+  return linear;
 }
 
 } // namespace Easing

@@ -73,6 +73,7 @@ parse_command(std::vector<std::string> items) {
   current_transform->type = Transform::Type::_INVALID;
   current_transform->time.start = start_time;
   current_transform->time.end = end_time;
+  current_transform->easing = Easing::from_int(std::stoi(items[1]));
 
   if (argument == 0) {
     if (command_type == "A") {
@@ -109,7 +110,6 @@ parse_command(std::vector<std::string> items) {
   }
 
   // Multiple arguments and type
-  current_transform->easing = Easing::linear;
   current_transform->before = sections[0];
   current_transform->after = sections[1];
 
