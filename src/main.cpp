@@ -126,8 +126,8 @@ void cleanup(void *user_data) {
 // Entrypoint
 int main() {
   const std::filesystem::path storyboard_path =
-      "/home/junko/Projects/TypeT/assets/KyuKurarin/Iyowa feat. KAFU - "
-      "Kyu-kurarin (0ugi).osb";
+      "/home/junko/Projects/TypeT/assets/Sakura No Zenya/Kushi - Sakura no "
+      "Zenya (Speed Up Ver.) (Taeyang).osb";
 
   TypeT::Context *data = new TypeT::Context();
   data->storyboard_path = storyboard_path;

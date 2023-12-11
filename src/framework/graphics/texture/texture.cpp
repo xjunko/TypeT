@@ -42,7 +42,6 @@ public:
             bool is_additive);
 
   // Debug
-  Texture() { std::printf("[Texture] Created, %s \n", info.path.c_str()); }
   ~Texture() {
     if (data) {
       stbi_image_free(data);
