@@ -13,6 +13,8 @@
 #include "framework/math/time.cpp"
 #include "framework/storyboard/storyboard.cpp"
 
+#include "framework/language/string.cpp"
+
 namespace TypeT {
 
 const sg_pass_action DEFAULT_PASS = {
@@ -27,6 +29,7 @@ public:
 
   std::unique_ptr<AssetManager> assets;
   std::unique_ptr<Storyboard> storyboard;
+  std::filesystem::path storyboard_path;
 
   float time;
 
@@ -51,6 +54,21 @@ void Context::end() {
   sg_commit();
 }
 
+// Utils FN
+std::filesystem::path find_audio_file_in_folder(std::filesystem::path path) {
+  const auto supported_type = {"mp3", "ogg"};
+
+  for (const auto &entry : std::filesystem::directory_iterator(path)) {
+    auto filename = StringUtils::trim_copy(entry.path().filename().string());
+
+    for (const auto &file_format : supported_type) {
+      if (StringUtils::ends_with(filename, file_format)) {
+        return entry;
+      }
+    }
+  }
+}
+
 // FNs
 void initialize(void *user_data) {
   Context *data = static_cast<Context *>(user_data);
@@ -69,8 +87,9 @@ void initialize(void *user_data) {
   data->audio_mixer = std::make_shared<Audio::BASS>();
   data->audio_mixer->initialize();
 
-  data->audio_song =
-      Audio::new_track("assets/Future Candy/audio.mp3", data->audio_mixer);
+  data->audio_song = Audio::new_track(
+      find_audio_file_in_folder(data->storyboard_path.parent_path()),
+      data->audio_mixer);
 
   // Init(s) fields
   data->limiter = std::make_unique<Time::Limiter>();
@@ -79,8 +98,7 @@ void initialize(void *user_data) {
   data->assets = std::make_unique<AssetManager>();
 
   data->storyboard = std::make_unique<Storyboard>();
-  data->storyboard->parse_file(
-      "assets/Future Candy/YUC'e - Future Candy (Nathan).osb");
+  data->storyboard->parse_file(data->storyboard_path);
 
   data->audio_song->play(); // Should be fine now.
 }
@@ -107,7 +125,12 @@ void cleanup(void *user_data) {
 
 // Entrypoint
 int main() {
+  const std::filesystem::path storyboard_path =
+      "/home/junko/Projects/TypeT/assets/KyuKurarin/Iyowa feat. KAFU - "
+      "Kyu-kurarin (0ugi).osb";
+
   TypeT::Context *data = new TypeT::Context();
+  data->storyboard_path = storyboard_path;
 
   sapp_desc desc = {
       .user_data = data,

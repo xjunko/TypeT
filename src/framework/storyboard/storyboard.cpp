@@ -12,12 +12,14 @@
 
 class Storyboard {
 public:
-  std::string root;
+  std::filesystem::path root_dir;
+  std::filesystem::path file_dir;
+
   std::vector<std::shared_ptr<Sprite>> sprites;
   AssetManager assets;
 
   // FNs
-  void parse_file(std::string path);
+  void parse_file(std::filesystem::path storyboard_path);
   void parse_lines(std::vector<std::string> lines);
 
   void load_sprite(std::string header, std::vector<std::string> commands);
@@ -26,9 +28,13 @@ public:
   void draw(float time);
 };
 
-void Storyboard::parse_file(std::string path) {
+void Storyboard::parse_file(std::filesystem::path storyboard_path) {
+  root_dir = storyboard_path.parent_path();
+  file_dir = storyboard_path;
+
   std::fstream storyboard_file;
-  storyboard_file.open(path, std::ios::in);
+
+  storyboard_file.open(storyboard_path, std::ios::in);
 
   if (storyboard_file.is_open()) {
     std::vector<std::string> lines;
@@ -125,23 +131,16 @@ void Storyboard::load_sprite(std::string header,
                              .replace(items[3].find('"'), sizeof('"'), "")
                              .replace(items[3].find('"'), sizeof('"'), "");
 
-  std::string texture_path =
-      "/run/media/junko/4th/Projects/TypeT/assets/Future Candy/" + filename;
+  filename = StringUtils::replace_all(filename, "\\", "/");
 
-  for (int i = 0; i < 25; i++) {
-    try {
-      texture_path =
-          texture_path.replace(texture_path.find('\\'), sizeof('\\'), "/");
-    } catch (...) {
-      continue;
-    }
-  }
+  std::filesystem::path texture_path =
+      root_dir / StringUtils::trim_copy(filename);
 
-  StringUtils::trim(texture_path);
+  // StringUtils::trim(texture_path);
 
   if (!std::filesystem::exists(texture_path)) {
     std::printf("[Sprite] Texture not found: %s \n", texture_path.c_str());
-    exit(1);
+    // exit(1);
   }
 
   if (items[0] == "Sprite") {
