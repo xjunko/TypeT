@@ -1,6 +1,8 @@
 #ifndef FUCKING_VECTOR
 #define FUCKING_VECTOR
 
+#include <iostream>
+
 namespace Math {
 template <typename T> class Vector2 {
 public:

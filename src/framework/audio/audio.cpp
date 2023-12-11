@@ -1,6 +1,7 @@
 #pragma once
 
 // OK
+#include <iostream>
 #include <memory>
 #include <stdbool.h>
 #define BOOL bool
