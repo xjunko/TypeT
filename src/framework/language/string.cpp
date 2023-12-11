@@ -63,4 +63,19 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
   res.push_back(s.substr(pos_start));
   return res;
 }
+
+std::string replace_all(std::string str, const std::string &from,
+                        const std::string &to) {
+  size_t start_pos = 0;
+  while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length();
+  }
+  return str;
+}
+
+bool ends_with(const std::string &s, const std::string &ending) {
+  return (s.size() >= ending.size()) &&
+         std::equal(ending.rbegin(), ending.rend(), s.rbegin());
+}
 } // namespace StringUtils
